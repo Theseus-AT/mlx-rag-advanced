@@ -190,11 +190,3 @@ chroma_db_mlx/ # Auch die DB sollte vielleicht ignoriert werden?
 # .gitignore
 docs/
 chroma_db_mlx/
-.env
-venv/
-.venv/
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-*.DS_Store

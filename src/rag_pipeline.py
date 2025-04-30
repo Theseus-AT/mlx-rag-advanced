@@ -1,4 +1,4 @@
-# src/rag_pipeline.py
+# src/rag_pipeline.py cleaned
 
 import os
 from dotenv import load_dotenv # Importieren
