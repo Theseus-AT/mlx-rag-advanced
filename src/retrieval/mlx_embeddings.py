@@ -46,6 +46,7 @@ class MLXEmbeddings(Embeddings):
         self.model_path = model_path
         self.batch_size = batch_size
         self.normalize = normalize
+        self._load_sentence_transformer_model()
 
     # --- model_post_init bleibt gleich ---
     def model_post_init(self, __context: Any) -> None:

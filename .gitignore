@@ -172,3 +172,18 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+# .gitignore Datei
+
+# ... andere Einträge ...
+.env
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+*.DS_Store
+chroma_db_mlx/ # Auch die DB sollte vielleicht ignoriert werden?

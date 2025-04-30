@@ -21,3 +21,8 @@ sentence-transformers
 # Optional: If using specific model types that require additional tokenizer libraries
 # protobuf
 # tiktoken
+chromadb
+beautifulsoup4
+pypdf
+langchain-chroma
+python-dotenv
