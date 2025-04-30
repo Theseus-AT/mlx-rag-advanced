@@ -1,95 +1,120 @@
-import mlx.core as mx
-# mlx.nn und mlx_lm imports werden hier nicht mehr direkt benötigt
-# import mlx.nn as nn
-# from mlx_lm.utils import load as mlx_load_model # Nicht mehr benötigt
+# retrieval/mlx_embeddings.py (Version für mlx-embeddings Bibliothek)
 
-from typing import Any, List, Optional, Iterator, Dict
+# !!! WICHTIG: Stelle sicher, dass du die Bibliothek installiert hast:
+# pip install mlx-embeddings
+
+import mlx.core as mx
+# mlx.nn wird hier wahrscheinlich nicht direkt benötigt
+import numpy as np
+from typing import Any, List, Optional
 import asyncio
-import numpy as np # Wird oft von sentence-transformers zurückgegeben
+import warnings
+from itertools import islice
+
+# --- NEUE IMPORTE ---
+try:
+    # Importiere load und generate aus der mlx_embeddings Bibliothek
+    from mlx_embeddings import load as load_embedding_model
+    from mlx_embeddings import generate as generate_embeddings
+    # Optional: Falls mlx_embeddings auch einen speziellen Prozessor braucht
+    # from mlx_embeddings import DefaultProcessor
+except ImportError:
+    raise ImportError(
+        "Could not import mlx_embeddings library. "
+        "Please install it with `pip install mlx-embeddings`"
+    )
+# --------------------
 
 # LangChain Core Imports
 from langchain_core.embeddings import Embeddings
 
-# NEU: Sentence Transformers Import
-try:
-    import sys
-    sys.path.append('/path/to/your/site-packages')  # Replace with the actual path to your installed packages
-    from sentence_transformers import SentenceTransformer
-except ImportError:
-    raise ImportError(
-        "Could not import sentence_transformers library. "
-        "Please install it with `pip install sentence-transformers`"
-    )
-
-
 class MLXEmbeddings(Embeddings):
     """
-    LangChain Embeddings class using Sentence Transformers library.
-    Includes debug print and error raising during model load.
+    LangChain Embeddings class using the mlx-embeddings library
+    for MLX-native embedding models like nomic-embed-text.
     """
-    # --- Pydantic Fields ---
     model_path: str
     model: Any = None
-    batch_size: int = 32
-    normalize: bool = True
+    tokenizer: Any = None # mlx_embeddings.load gibt beides zurück
+    # DefaultProcessor wird hier nicht explizit gespeichert,
+    # da generate ihn intern verwenden könnte oder er stateless ist.
+    # Falls stateful, müsste er hier gespeichert werden.
 
-    # --- Angepasste __init__ ---
+    # Parameter wie batch_size und normalize werden jetzt potenziell
+    # von mlx_embeddings.generate gehandhabt. Wir behalten sie,
+    # falls wir sie manuell anwenden müssen oder zur Info.
+    batch_size: int = 32 # Überprüfen, ob generate dies unterstützt
+    normalize: bool = True # generate gibt bereits normalisierte Embeddings zurück
+
     def __init__(
         self,
         model_path: str,
-        batch_size: int = 32,
-        normalize: bool = True,
+        batch_size: int = 32, # Evtl. nicht mehr direkt verwendet
+        normalize: bool = True, # Evtl. nicht mehr direkt verwendet
         **kwargs: Any
     ):
-        """Initializes the SentenceTransformer Embeddings."""
+        """Initializes the MLXEmbeddings using mlx-embeddings."""
         super().__init__(**kwargs)
         self.model_path = model_path
+        # Speichere Parameter, auch wenn sie evtl. nicht direkt von _embed genutzt werden
         self.batch_size = batch_size
         self.normalize = normalize
-        self._load_sentence_transformer_model()
+        self._load_mlx_embedding_model()
 
-    # --- model_post_init bleibt gleich ---
-    def model_post_init(self, __context: Any) -> None:
-        """Load the model after Pydantic validation."""
-        if self.model is None:
-             self._load_sentence_transformer_model()
-
-    # --- Angepasste _load Methode mit Debug und raise ---
-    def _load_sentence_transformer_model(self):
-        """Loads the Sentence Transformer model."""
-        print(f"Loading Sentence Transformer model from: {self.model_path}")
+    def _load_mlx_embedding_model(self):
+        """Loads the MLX embedding model using mlx_embeddings.load."""
+        print(f"Loading MLX Embedding model from: {self.model_path} using mlx_embeddings")
         try:
-            # Verwende SentenceTransformer zum Laden
-            self.model = SentenceTransformer(self.model_path)
-            print("Sentence Transformer model loaded successfully.")
-            # --- DEBUG ZEILE ---
-            print(f"--- DEBUG: Loaded model type: {type(self.model)} ---")
-            # --- /DEBUG ZEILE ---
-        except Exception as e:
-            print(f"Error loading Sentence Transformer model from {self.model_path}: {e}")
-            # ---->> WICHTIG: Fehler weitergeben! <<----
-            raise e
+            # Verwende die load Funktion aus mlx_embeddings
+            self.model, self.tokenizer = load_embedding_model(self.model_path)
+            # Hinweis: Das HF-Beispiel verwendet 'processor', aber die lib lädt 'tokenizer'.
+            # Wir gehen davon aus, dass 'tokenizer' korrekt ist oder intern verwendet wird.
+            # Falls ein 'processor' benötigt wird, muss dieser hier auch geladen/initialisiert werden.
 
-    # --- _embed Methode verwendet jetzt model.encode ---
+            # Optional: Führe eine kleine Test-Inferenz durch, um sicherzustellen, dass es funktioniert
+            # try:
+            #     _ = generate_embeddings(self.model, self.tokenizer, texts=["test"])
+            # except Exception as test_e:
+            #      print(f"WARNUNG: Test-Inferenz nach dem Laden fehlgeschlagen: {test_e}")
+
+            print("MLX Embedding model and tokenizer loaded successfully via mlx_embeddings.")
+            print(f"--- DEBUG: Loaded MLX embedding model type: {type(self.model)} ---")
+            print(f"--- DEBUG: Loaded MLX embedding tokenizer type: {type(self.tokenizer)} ---")
+
+        except Exception as e:
+            print(f"Error loading MLX embedding model from {self.model_path} using mlx_embeddings: {e}")
+            # Optional: Detaillierteren Traceback loggen
+            import traceback
+            traceback.print_exc()
+            raise e # Fehler weitergeben
+
     def _embed(self, texts: List[str]) -> List[List[float]]:
-        """Helper function to compute embeddings using Sentence Transformers."""
-        # Check if model was loaded correctly before attempting to use it
-        if self.model is None:
-             # This should ideally not be reached if _load_sentence_transformer_model raises errors
-             print("ERROR: Embedding model is None, cannot perform embedding.")
-             return [[] for _ in texts]
-        try:
-            raw_embeddings = self.model.encode(
-                texts,
-                batch_size=self.batch_size,
-                normalize_embeddings=self.normalize,
-                show_progress_bar=False
-            )
-            return raw_embeddings.tolist()
-        except Exception as e:
-            # Print the specific error during encoding
-            print(f"Error during Sentence Transformer encoding step: {e}")
-            return [[] for _ in texts]
+        """Compute embeddings in Batches using mlx_embeddings.generate."""
+        if self.model is None or self.tokenizer is None:
+            raise RuntimeError("MLX Embedding model or tokenizer not loaded.")
+
+        def batched(iterable, batch_size):
+            """Helper to yield items in batches."""
+            it = iter(iterable)
+            while batch := list(islice(it, batch_size)):
+                yield batch
+
+        all_embeddings = []
+        for batch in batched(texts, self.batch_size):
+            try:
+                output = generate_embeddings(self.model, self.tokenizer, texts=batch)
+                if not hasattr(output, 'text_embeds'):
+                    raise AttributeError("Output object lacks 'text_embeds' attribute.")
+                batch_embeddings = np.array(output.text_embeds).tolist()
+                all_embeddings.extend(batch_embeddings)
+            except Exception as e:
+                print(f"Error embedding batch: {e}")
+                import traceback
+                traceback.print_exc()
+                # Füge leere Embeddings für diesen Batch hinzu, um Länge zu erhalten
+                all_embeddings.extend([[] for _ in batch])
+
+        return all_embeddings
 
 
     # --- Öffentliche Methoden bleiben gleich ---
@@ -102,8 +127,10 @@ class MLXEmbeddings(Embeddings):
     def embed_query(self, text: str) -> List[float]:
         """Embed a single query text."""
         result = self._embed([text])
-        return result[0] if result and result[0] else []
+        # Stelle sicher, dass das Ergebnis nicht leer ist, bevor du darauf zugreifst
+        return result[0] if result else []
 
+    # --- Async Methoden bleiben gleich (nutzen run_in_executor) ---
     async def aembed_documents(self, texts: List[str]) -> List[List[float]]:
         """Asynchronous version of embed_documents."""
         return await asyncio.get_event_loop().run_in_executor(None, self.embed_documents, texts)
