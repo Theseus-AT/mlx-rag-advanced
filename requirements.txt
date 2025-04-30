@@ -1,0 +1,23 @@
+# Core MLX Framework
+mlx
+
+# MLX Language Model utilities (loading, generation)
+mlx-lm
+
+# LangChain Core components
+langchain-core
+
+# LangChain main package (often needed for higher-level abstractions or specific integrations)
+# Might be optional depending on exactly which LangChain features you use beyond core,
+# but good to include initially.
+langchain
+
+# Hugging Face Transformers (primarily for tokenizers used by mlx-lm)
+transformers
+
+# Sentencepiece (often required by tokenizers)
+sentencepiece
+
+# Optional: If using specific model types that require additional tokenizer libraries
+# protobuf
+# tiktoken
