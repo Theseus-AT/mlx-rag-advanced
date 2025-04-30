@@ -26,8 +26,8 @@ if __name__ == "__main__":
     # IMPORTANT: Replace with actual paths to your MLX compatible models
     # e.g., from https://huggingface.co/mlx-community
     # Use absolute paths or paths relative to where you run the script
-    MODEL_PATH = "/Users/youruser/models/mlx-community/Mistral-7B-Instruct-v0.2-4bit-mlx" # Example - REPLACE
-    EMBEDDING_MODEL_PATH = "/Users/youruser/models/mlx-community/all-MiniLM-L6-v2-mlx" # Example - REPLACE
+    MODEL_PATH = "/Users/dewitt/Desktop/Theseus AI Suit/Theseus DataCraft/models/gemma-3-4b-it-qat-4bit/" # Example - REPLACE
+    EMBEDDING_MODEL_PATH = "/Users/dewitt/Desktop/Theseus AI Suit/Theseus DataCraft/models/mxbai-embed-large-v1" # Example - REPLACE
 
     # Check if paths exist (simple check)
     if not os.path.exists(MODEL_PATH):
