@@ -1,33 +1,33 @@
-# mlx-rag-advanced
-# Advanced RAG with MLX and Metal Optimizations
+📘 mlx-rag-advanced
 
-Dieses Repository implementiert erweiterte Retrieval-Augmented Generation (RAG)-Funktionen mithilfe des [MLX-Frameworks](https://github.com/ml-explore/mlx) von Apple. Ein besonderer Fokus liegt auf der Nutzung und Optimierung von MLX auf Apple Silicon unter Einbeziehung von benutzerdefinierten [Metal](https://developer.apple.com/metal/)-Kernels, um die Leistung zu maximieren.
+Advanced RAG mit MLX und Apple Metal – lokal, effizient, dokumentiert
 
-## Motivation
+Dieses Repository demonstriert eine fortgeschrittene, lokal ausführbare RAG-Architektur (Retrieval-Augmented Generation), optimiert für Apple Silicon und MLX.
+Der Fokus liegt auf einer sauberen, nachvollziehbaren MLX-Implementierung mit optionalen Metal-Kernels zur Beschleunigung von Embeddings, Vektorsuche und Generierung.
 
-MLX ist ein vielversprechendes Framework für maschinelles Lernen auf Apple Silicon. Die RAG-Technik kombiniert die Stärken von Informationsretrieval und generativen Sprachmodellen. Dieses Projekt zielt darauf ab:
+⸻
 
-1.  Eine flexible und leistungsstarke RAG-Pipeline mit MLX zu implementieren.
-2.  Die Möglichkeiten von MLX zur Beschleunigung von RAG-Komponenten (z. B. Embeddings, Vektorsuche, Generierung) auf Apple Silicon zu demonstrieren.
-3.  Die **Dokumentationslücken** zu schließen, die bei der Verwendung von benutzerdefinierten Metal-Kernels mit MLX bestehen, insbesondere für Entwickler, die neu in Metal sind. Unsere Recherchen (siehe `docs/research_summary.md` – *optional, hier könntest du deine Analyse einfügen*) haben ergeben, dass es an anfängerfreundlichen Einführungen, strukturierten Tutorials, Best Practices und FAQs mangelt.
+🎯 Motivation
 
-Dieses Repository soll nicht nur funktionierenden Code bereitstellen, sondern auch als **Lernressource** dienen, um die Integration von Metal in MLX besser zu verstehen und anzuwenden.
+MLX bietet ein modernes, leichtgewichtiges Framework für maschinelles Lernen auf Apple Silicon. Dieses Projekt hat sich folgende Ziele gesetzt:
+	•	Aufbau einer modularen RAG-Pipeline unter MLX (Chunking → Embeddings → Retrieval → LLM).
+	•	Nutzung und Analyse der Metal-Beschleunigung für kritische Komponenten (z. B. Ähnlichkeitssuche, Embedding-Inferenz).
+	•	Dokumentation des Integrationsprozesses von benutzerdefinierten Metal-Kernels in MLX – insbesondere für Entwickler:innen ohne Vorkenntnisse in Metal.
+	•	Bereitstellung von klar strukturierten Lernressourcen (Tutorials, Best Practices, Benchmarks).
 
-## Ziele
+⸻
 
-* Implementierung einer modularen RAG-Pipeline (Retrieval, Augmentation, Generation) in MLX.
-* Beispiele für die Optimierung von RAG-Komponenten mit MLX und potenziell benutzerdefinierten Metal-Kernels.
-* Bereitstellung von **klaren Beispielen und Tutorials**, die zeigen, wie Metal-Kernels in MLX integriert werden können (siehe `examples/` und `docs/tutorials/`).
-* Entwicklung einer **anfängerfreundlichen Einführung** in Metal speziell für MLX-Nutzer (siehe `docs/intro_to_metal_for_mlx.md`).
-* Sammlung von **Best Practices** für die Leistungsoptimierung mit Metal in MLX (siehe `docs/best_practices/`).
-* Aufbau einer **FAQ und Troubleshooting-Anleitung** für häufige Probleme bei der Metal-Integration (siehe `docs/faq_and_troubleshooting.md`).
+🧭 Projektziele
+	•	Klare, nachvollziehbare RAG-Architektur mit MLX.
+	•	Unterstützung für MLX-basierte Embedding-Modelle.
+	•	Einbindung von lokal laufenden Sprachmodellen (z. B. Gemma, Mistral, Phi-2).
+	•	Beispiele für eigene Metal-Kernels (z. B. Distanzmetriken, Normalisierung).
+	•	Performance-Benchmarks zur Analyse von CPU- vs. GPU-Ausführung (Metal).
 
-## Features (Geplant)
+⸻
 
-* MLX-basierte Embedding-Modelle.
-* Optionen für Vektorsuche (ggf. mit Metal-Beschleunigung für bestimmte Operationen).
-* Integration mit MLX-kompatiblen Sprachmodellen (z. B. aus dem `mlx-examples` Repo).
-* Beispiele für benutzerdefinierte Metal-Kernels für spezifische Aufgaben (z. B. spezielle Distanzmetriken).
-* Performance-Benchmarks (CPU vs. GPU/Metal).
-
-## Repository-Struktur
+📚 Dokumentation (im Aufbau)
+	•	docs/intro_to_metal_for_mlx.md – Einsteigerfreundlicher Einstieg in Metal
+	•	docs/tutorials/ – Schritt-für-Schritt-Anleitungen mit Praxisbeispielen
+	•	docs/best_practices/ – Tipps zur Optimierung von Speicher und Geschwindigkeit
+	•	docs/faq_and_troubleshooting.md – Hilfe bei häufigen Problemen
